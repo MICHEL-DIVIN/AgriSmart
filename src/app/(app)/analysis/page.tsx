@@ -91,9 +91,13 @@ export default function NewAnalysisPage() {
     }
 
     // Map resultToSave to match AnalysisResult component expectations
+    // Garantir que toutes les propriétés nécessaires sont présentes
     setAnalysisResult({
       ...resultToSave,
-      crop: resultToSave.recommended_crop, // Alias for display compatibility
+      crop: resultToSave.recommended_crop || '', // Alias pour compatibilité d'affichage
+      recommended_crop: resultToSave.recommended_crop || '',
+      confidence: resultToSave.confidence ?? 0,
+      alternatives: Array.isArray(resultToSave.alternatives) ? resultToSave.alternatives : [],
     });
     setIsAnalyzing(false);
   };

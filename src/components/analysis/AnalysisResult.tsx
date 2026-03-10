@@ -19,11 +19,12 @@ const CircularProgress = ({ percentage }: CircularProgressProps) => {
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   return (
-    <div className="relative h-[100px] w-[100px]">
+    <div className="relative h-[100px] w-[100px]" suppressHydrationWarning>
       <svg
         height="100"
         width="100"
         className="-rotate-90 transform"
+        suppressHydrationWarning
       >
         <circle
           stroke="hsl(var(--border))"
@@ -47,7 +48,9 @@ const CircularProgress = ({ percentage }: CircularProgressProps) => {
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-xl font-bold text-foreground">{percentage.toFixed(1)}%</span>
+        <span className="text-xl font-bold text-foreground" suppressHydrationWarning>
+          {percentage.toFixed(1)}%
+        </span>
       </div>
     </div>
   );
@@ -73,13 +76,18 @@ export function AnalysisResult({ result }: { result: any | null }) {
     );
   }
 
+  // Garantir que crop est toujours défini (utiliser recommended_crop comme fallback)
+  const cropName = result.crop || result.recommended_crop || '';
+  const confidence = result.confidence ?? 0;
+  const alternatives = Array.isArray(result.alternatives) ? result.alternatives : [];
+
   return (
     <Card className="p-6">
       <div className="text-center">
         <p className="text-xs uppercase tracking-wider text-muted">Culture recommandée</p>
-        <h2 className="text-3xl font-bold text-foreground">{result.crop}</h2>
+        <h2 className="text-3xl font-bold text-foreground">{getCropFr(cropName)}</h2>
         <div className="my-4 flex justify-center">
-          <CircularProgress percentage={result.confidence} />
+          <CircularProgress percentage={confidence} />
         </div>
         <p className="text-sm text-muted-foreground">Score de confiance</p>
       </div>
@@ -89,27 +97,33 @@ export function AnalysisResult({ result }: { result: any | null }) {
       <div>
         <h4 className="text-base font-semibold">Alternatives</h4>
         <div className="mt-4 space-y-4">
-          {(result.alternatives ?? []).map((alt: any, index: number) => (
-            <div key={index} className="grid grid-cols-[auto_1fr_auto] items-center gap-4">
-              <span className="flex h-6 w-6 items-center justify-center rounded-md bg-secondary text-xs font-bold text-muted-foreground">
-                #{index + 1}
-              </span>
-              <p className="font-semibold">{getCropFr(alt.crop)}</p>
-              <div className="flex items-center gap-2">
-                <Progress value={alt.confidence} className="h-1 w-20" />
-                <span className="text-sm font-semibold text-primary">
-                  {alt.confidence.toFixed(1)}%
+          {alternatives.map((alt: any, index: number) => {
+            // Utiliser une clé stable basée sur le crop + index pour éviter les problèmes de réconciliation
+            const altCrop = alt.crop || alt.name || `alt-${index}`;
+            const stableKey = `${altCrop}-${index}`;
+            
+            return (
+              <div key={stableKey} className="grid grid-cols-[auto_1fr_auto] items-center gap-4">
+                <span className="flex h-6 w-6 items-center justify-center rounded-md bg-secondary text-xs font-bold text-muted-foreground">
+                  #{index + 1}
                 </span>
+                <p className="font-semibold">{getCropFr(altCrop)}</p>
+                <div className="flex items-center gap-2">
+                  <Progress value={alt.confidence ?? 0} className="h-1 w-20" />
+                  <span className="text-sm font-semibold text-primary">
+                    {(alt.confidence ?? 0).toFixed(1)}%
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
       
       <Separator className="my-6" />
 
       <div>
-        <h4 className="text-base font-semibold">Conditions idéales pour {getCropFr(result.crop)}</h4>
+        <h4 className="text-base font-semibold">Conditions idéales pour {getCropFr(cropName)}</h4>
         <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
           <StatChip label="Ideal N" value="80-100 mg/kg" />
           <StatChip label="Ideal P" value="40-60 mg/kg" />

@@ -66,11 +66,12 @@ const InputField = ({ name, label, placeholder, unit, control, type = "number", 
 const PhScale = ({ value }: { value: number }) => {
   const percentage = (value / 14) * 100;
   return (
-    <div className="mt-2">
+    <div className="mt-2" suppressHydrationWarning>
       <div className="h-2 w-full rounded-full bg-gradient-to-r from-red-500 via-green-500 to-red-500 relative">
         <div 
           className="absolute top-1/2 h-4 w-1 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-white border border-gray-300" 
           style={{ left: `${percentage}%` }}
+          suppressHydrationWarning
         />
       </div>
       <div className="flex justify-between text-xs text-muted-foreground mt-1">
@@ -82,27 +83,56 @@ const PhScale = ({ value }: { value: number }) => {
   );
 };
 
+// Valeurs par défaut constantes pour éviter les problèmes d'hydration
+const DEFAULT_FORM_VALUES: FormValues = {
+  nitrogen: 85,
+  phosphorus: 42,
+  potassium: 210,
+  temperature: 24.5,
+  humidity: 72,
+  ph: 6.4,
+  rainfall: 180,
+};
+
 export function AnalysisForm({ onAnalyze, isAnalyzing }: { onAnalyze: (data: FormValues) => void; isAnalyzing: boolean; }) {
   const { user, loading: authLoading } = useAuth();
-  const [defaultValues, setDefaultValues] = useState({
-    nitrogen: 85,
-    phosphorus: 42,
-    potassium: 210,
-    temperature: 24.5,
-    humidity: 72,
-    ph: 6.4,
-    rainfall: 180,
-  });
+  const [mounted, setMounted] = useState(false);
+  const [phValue, setPhValue] = useState(DEFAULT_FORM_VALUES.ph);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: defaultValues,
+    defaultValues: DEFAULT_FORM_VALUES,
   });
 
+  // Marquer le composant comme monté côté client pour éviter les problèmes d'hydration
   useEffect(() => {
-    const fetchLastAnalysis = async () => {
-      if (authLoading || !user) return;
+    setMounted(true);
+  }, []);
 
+  // Surveiller la valeur de pH de manière sécurisée pour éviter les problèmes d'hydration
+  useEffect(() => {
+    if (!mounted) return;
+    
+    const subscription = form.watch((value, { name }) => {
+      if (name === 'ph' && value.ph !== undefined) {
+        setPhValue(value.ph);
+      }
+    });
+    
+    // Initialiser la valeur de pH depuis le formulaire
+    const currentPh = form.getValues('ph');
+    if (currentPh !== undefined) {
+      setPhValue(currentPh);
+    }
+
+    return () => subscription.unsubscribe();
+  }, [form, mounted]);
+
+  // Charger la dernière analyse uniquement après le montage complet
+  useEffect(() => {
+    if (!mounted || authLoading || !user) return;
+
+    const fetchLastAnalysis = async () => {
       try {
         const supabase = createClient();
         const { data, error } = await supabase
@@ -114,7 +144,7 @@ export function AnalysisForm({ onAnalyze, isAnalyzing }: { onAnalyze: (data: For
           .single();
 
         if (!error && data) {
-          const newDefaults = {
+          const newDefaults: FormValues = {
             nitrogen: data.n,
             phosphorus: data.p,
             potassium: data.k,
@@ -123,9 +153,9 @@ export function AnalysisForm({ onAnalyze, isAnalyzing }: { onAnalyze: (data: For
             ph: data.ph,
             rainfall: data.rainfall,
           };
-          setDefaultValues(newDefaults);
-          // Reset form with new default values
+          // Reset form avec les nouvelles valeurs uniquement après le montage
           form.reset(newDefaults);
+          setPhValue(newDefaults.ph);
         }
       } catch (error) {
         console.error('Error fetching last analysis:', error);
@@ -134,13 +164,11 @@ export function AnalysisForm({ onAnalyze, isAnalyzing }: { onAnalyze: (data: For
 
     fetchLastAnalysis();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, authLoading]);
+  }, [user, authLoading, mounted]);
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     onAnalyze(data);
   };
-  
-  const phValue = form.watch('ph');
 
   return (
     <Card className="p-0">
@@ -171,7 +199,7 @@ export function AnalysisForm({ onAnalyze, isAnalyzing }: { onAnalyze: (data: For
                         <span className="rounded-md bg-border px-2 py-1 text-xs text-muted-foreground">pH</span>
                       </div>
                     </div>
-                    <PhScale value={phValue || 0} />
+                    {mounted && <PhScale value={phValue || 0} />}
                     <FormMessage />
                   </FormItem>
                 )}
