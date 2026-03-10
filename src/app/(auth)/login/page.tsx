@@ -38,7 +38,13 @@ export default function LoginPage() {
     setError(null);
     try {
       console.log("2. Appel signIn...");
-      await signIn(data.email, data.password);
+      const { error } = await signIn(data.email, data.password);
+      
+      if (error) {
+        setError("Email ou mot de passe incorrect.");
+        setLoading(false);
+        return;
+      }
       
       // LOGS TEMPORAIRES
       const supabase = createClient()
@@ -46,7 +52,7 @@ export default function LoginPage() {
       console.log("USER APRES LOGIN:", user)
       console.log("USER ID:", user?.id)
       
-      const { data: profile, error } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', user?.id)
@@ -54,7 +60,7 @@ export default function LoginPage() {
       
       console.log("PROFILE:", profile)
       console.log("ROLE:", profile?.role)
-      console.log("ERROR:", error)
+      console.log("ERROR:", profileError)
       
       if (profile?.role === 'admin') {
         console.log("REDIRECT VERS /admin")
@@ -66,7 +72,7 @@ export default function LoginPage() {
       
     } catch (err) {
       console.log("ERREUR LOGIN:", err)
-      setError("Une erreur inattendue s'est produite");
+      setError("Email ou mot de passe incorrect.");
     } finally {
       setLoading(false);
     }

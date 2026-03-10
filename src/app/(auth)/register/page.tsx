@@ -160,7 +160,7 @@ export default function RegisterPage() {
               <Label className="text-muted text-xs uppercase tracking-wider">Nom complet</Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
-                <Input placeholder="Jean Dupont" className="pl-9" {...register('fullName')} />
+                <Input placeholder="Votre nom complet" className="pl-9" {...register('fullName')} />
               </div>
               {errors.fullName && <p className="text-xs text-red-500 mt-1">{errors.fullName.message}</p>}
             </div>
