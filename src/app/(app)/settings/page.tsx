@@ -12,7 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SettingsPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, userRole } = useAuth();
   const [profile, setProfile] = useState({
     display_name: '',
     email: '',
@@ -140,15 +140,23 @@ export default function SettingsPage() {
     
     const supabase = createClient();
     setSaving(true);
+    
+    // Empêcher les utilisateurs non-admin de changer leur rôle
+    const updateData: any = {
+      display_name: profile.display_name,
+      organization: profile.organization,
+      phone: profile.phone,
+      updated_at: new Date().toISOString()
+    };
+    
+    // Seuls les admins peuvent modifier leur rôle
+    if (userRole === 'admin') {
+      updateData.role = profile.role;
+    }
+    
     await supabase
       .from('profiles')
-      .update({
-        display_name: profile.display_name,
-        role: profile.role,
-        organization: profile.organization,
-        phone: profile.phone,
-        updated_at: new Date().toISOString()
-      })
+      .update(updateData)
       .eq('id', user.id);
     setSaving(false);
   };
@@ -193,18 +201,27 @@ export default function SettingsPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="role">Rôle</Label>
-                <Select 
-                  value={profile.role}
-                  onValueChange={(value) => setProfile({ ...profile, role: value })}
-                >
-                  <SelectTrigger id="role">
-                    <SelectValue placeholder="Select a role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="user">User</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
+                {userRole === 'admin' ? (
+                  <Select 
+                    value={profile.role}
+                    onValueChange={(value) => setProfile({ ...profile, role: value })}
+                  >
+                    <SelectTrigger id="role">
+                      <SelectValue placeholder="Select a role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="user">User</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input 
+                    id="role" 
+                    value={profile.role === 'admin' ? 'Administrateur' : 'Utilisateur'}
+                    disabled
+                    className="capitalize"
+                  />
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="organization">Organisation</Label>
