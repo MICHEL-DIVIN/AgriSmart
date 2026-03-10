@@ -12,7 +12,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/contexts/AuthContext';
-import { GoogleIcon } from '@/components/auth/GoogleIcon';
 import { createClient } from '@/lib/supabase/client';
 
 const loginSchema = z.object({
@@ -24,7 +23,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const { signIn, signInWithGoogle } = useAuth();
+  const { signIn } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -72,16 +71,6 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
-  
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    setError(null);
-    const { error } = await signInWithGoogle();
-     if (error) {
-      setError(error.message);
-      setLoading(false);
-    }
-  }
 
   return (
     <div 
@@ -145,20 +134,6 @@ export default function LoginPage() {
           </p>
         )}
       </form>
-      
-      <div className="relative my-6">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-[#2a2a2a]" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-[#141414] px-2 text-[#525252]">Or</span>
-        </div>
-      </div>
-
-      <Button variant="secondary" onClick={handleGoogleSignIn} disabled={loading} className="w-full h-12 text-sm text-white/90">
-        <GoogleIcon className="mr-2" />
-        Continuer avec Google
-      </Button>
 
       <p className="mt-8 text-center text-sm text-[#a3a3a3]">
         Pas encore de compte ?{' '}
