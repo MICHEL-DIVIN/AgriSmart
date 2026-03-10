@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 4%; /* #0a0a0a */
+    --foreground: 0 0% 100%; /* #ffffff */
+
+    --card: 0 0% 8%; /* #141414 */
+    --card-foreground: 0 0% 100%;
+
+    --popover: 0 0% 8%; /* #141414 */
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 142 76% 36%; /* #16a34a */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 11%; /* #1c1c1c */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 32%; /* #525252 */
+    --muted-foreground: 0 0% 64%; /* #a3a3a3 */
+
+    --accent: 145 63% 32%; /* #15803d */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%; /* #ef4444 */
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 16%; /* #2a2a2a */
+    --input: 0 0% 11%; /* #1c1c1c */
+    --ring: 142 76% 36%; /* #16a34a */
+
+    --radius: 1rem; /* 16px */
+    
+    --chart-1: 142 76% 36%;
+    --chart-2: 145 63% 39%;
+    --chart-3: 148 56% 31%;
+    --chart-4: 150 50% 24%;
+    --chart-5: 153 45% 17%;
+  }
+
+  .dark {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 142 76% 36%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 11%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 32%;
+    --muted-foreground: 0 0% 64%;
+    --accent: 145 63% 32%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 16%;
+    --input: 0 0% 11%;
+    --ring: 142 76% 36%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .data-value {
+    @apply font-numeric text-3xl font-bold text-foreground;
+  }
+  .data-label {
+    @apply text-xs font-medium uppercase tracking-wider text-muted;
+  }
+}
+
+@layer utilities {
+  .font-numeric {
+    font-variant-numeric: tabular-nums;
+  }
+}
