@@ -1,10 +1,21 @@
 "use client";
 import { useState } from 'react';
-import { AnalysisForm } from '@/components/analysis/AnalysisForm';
-import { AnalysisResult } from '@/components/analysis/AnalysisResult';
+import dynamic from 'next/dynamic';
 import { useAuth } from '@/contexts/AuthContext';
 import { createClient } from '@/lib/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+
+const AnalysisForm = dynamic(
+  () => import('@/components/analysis/AnalysisForm')
+    .then(mod => mod.AnalysisForm),
+  { ssr: false }
+);
+
+const AnalysisResult = dynamic(
+  () => import('@/components/analysis/AnalysisResult')
+    .then(mod => mod.AnalysisResult),
+  { ssr: false }
+);
 
 export default function NewAnalysisPage() {
   const [analysisResult, setAnalysisResult] = useState<any | null>(null);
