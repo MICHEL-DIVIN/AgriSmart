@@ -38,7 +38,7 @@ const CustomTooltip = ({ active, payload }: any) => {
 
 const CustomLegend = ({ data }: { data: { name: string; value: number; fill: string }[] }) => {
   return (
-    <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 mt-4">
       {data.map((entry, index) => (
         <div key={`item-${index}`} className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.fill }}></span>

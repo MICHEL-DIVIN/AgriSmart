@@ -69,9 +69,9 @@ export function UserDetailModal({ isOpen, setIsOpen, user }: { isOpen: boolean, 
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogContent className="max-w-[520px] bg-card border-border rounded-2xl p-8">
+            <DialogContent className="w-full max-w-[95vw] md:max-w-2xl max-h-[90vh] overflow-y-auto bg-card border-border rounded-2xl p-8">
                 <DialogHeader className="text-left space-y-4">
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-wrap items-center gap-4">
                         <Avatar className="h-14 w-14">
                             <AvatarFallback className="text-2xl bg-primary">{getInitials(user.name || user.display_name || user.email)}</AvatarFallback>
                         </Avatar>
@@ -87,7 +87,7 @@ export function UserDetailModal({ isOpen, setIsOpen, user }: { isOpen: boolean, 
 
                 <Separator className="my-4 bg-border" />
                 
-                <div className="grid grid-cols-3 gap-4 my-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 my-4">
                     <Stat label="Analyses" value={user.analyses?.toString() || '0'} />
                     <Stat label="Inscrit" value={`Il y a ${formatDistanceToNow(new Date(user.joined || user.created_at))}`} />
                     <Stat label="Dernière activité" value={user.last_active || 'N/A'} />
@@ -104,7 +104,7 @@ export function UserDetailModal({ isOpen, setIsOpen, user }: { isOpen: boolean, 
                     ) : (
                         <div className="space-y-2">
                             {recentAnalyses.map((analysis) => (
-                                <div key={analysis.id} className="flex justify-between items-center text-sm p-2 rounded-md hover:bg-secondary">
+                                <div key={analysis.id} className="flex flex-wrap justify-between items-center gap-2 text-sm p-2 rounded-md hover:bg-secondary">
                                     <p className="font-semibold text-foreground">{getCropFr(analysis.recommended_crop)}</p>
                                     <p className="text-primary">{analysis.confidence.toFixed(1)}%</p>
                                     <p className="text-muted-foreground">{format(new Date(analysis.created_at), 'MMM dd, yyyy')}</p>

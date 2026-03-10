@@ -52,12 +52,9 @@ export default function ComparisonPage() {
     fetchLastAnalysis();
   }, [user, loading]);
 
-  // @ts-ignore
-  const data1 = cropComparisonData[crop1];
-   // @ts-ignore
-  const data2 = cropComparisonData[crop2];
-
-  const recommendation = data1.compatibility > data2.compatibility ? crop1 : crop2;
+  const data1 = cropComparisonData[crop1 as keyof typeof cropComparisonData] ?? { compatibility: 0, conditions: [] };
+  const data2 = cropComparisonData[crop2 as keyof typeof cropComparisonData] ?? { compatibility: 0, conditions: [] };
+  const recommendation = (data1.compatibility ?? 0) > (data2.compatibility ?? 0) ? crop1 : crop2;
 
   // Build radar chart data with current soil values
   const currentRadarData = lastAnalysis ? [

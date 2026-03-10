@@ -81,7 +81,7 @@ export default function AdminSettingsPage() {
       <AlertDialogTrigger asChild>
         <Button variant={variant} className="w-full justify-start">{children}</Button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="w-full max-w-[95vw] md:max-w-2xl max-h-[90vh] overflow-y-auto">
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>

@@ -124,7 +124,7 @@ export function AnalysisResult({ result }: { result: any | null }) {
 
       <div>
         <h4 className="text-base font-semibold">Conditions idéales pour {getCropFr(cropName)}</h4>
-        <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           <StatChip label="Ideal N" value="80-100 mg/kg" />
           <StatChip label="Ideal P" value="40-60 mg/kg" />
           <StatChip label="Ideal K" value="40-50 mg/kg" />

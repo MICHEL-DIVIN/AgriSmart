@@ -59,15 +59,15 @@ export function AnalysisDetailModal({ isOpen, setIsOpen, analysis }: { isOpen: b
     
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogContent className="max-w-[520px] bg-card border-border rounded-2xl p-8">
-               <DialogHeader className="flex-row items-center gap-4 space-y-0">
+            <DialogContent className="w-full max-w-[95vw] md:max-w-2xl max-h-[90vh] overflow-y-auto bg-card border-border rounded-2xl p-8">
+               <DialogHeader className="flex flex-wrap flex-row items-center gap-4 space-y-0">
                     <DialogTitle className="text-2xl font-bold text-foreground flex-1">{getCropFr(analysis.recommended_crop)}</DialogTitle>
                     <CircularProgress percentage={analysis.confidence} />
                </DialogHeader>
 
                 <Separator className="my-4 bg-border" />
                 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                     {parameters.map(p => <StatCard key={p.label} label={p.label} value={p.value} />)}
                 </div>
 
@@ -90,7 +90,7 @@ export function AnalysisDetailModal({ isOpen, setIsOpen, analysis }: { isOpen: b
 
                  <Separator className="my-4 bg-border" />
 
-                <div className="flex items-center gap-3 text-sm">
+                <div className="flex flex-wrap items-center gap-3 text-sm">
                     <p className="text-muted-foreground">Analysé par</p>
                     <Avatar className="h-6 w-6">
                         <AvatarFallback className="text-xs bg-primary">{getInitials(analysis.user?.name || analysis.user?.display_name || 'Unknown')}</AvatarFallback>
